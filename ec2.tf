@@ -1,6 +1,6 @@
 resource "aws_volume_attachment" "ebs_att" {
   device_name = "/dev/sdf"
-  volume_id   = "vol-00a78ff6616cffbc7"         // Give Volume ID Here
+  volume_id   = "vol-009f540640ac021e8"         // Give Volume ID Here
   instance_id = aws_instance.web.id
 }
 resource "aws_instance" "web" {
@@ -13,6 +13,9 @@ resource "aws_instance" "web" {
   }
   user_data = <<EOF
                 #!/bin/bash
+                while ! ls /dev/xvdf > /dev/null
+                do    sleep 5
+                done
                 sudo yum install xfsprogs -y
                 BLK_ID=$(file -s /dev/xvdf | cut -f2 -d" ")
                 if [ "`echo -n $BLK_ID`" == "data" ] ; then sudo mkfs -t xfs /dev/xvdf; fi
